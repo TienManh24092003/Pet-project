@@ -1,0 +1,8 @@
+# Sử dụng image MySQL chính thức
+FROM mysql:8.0
+
+# Copy SQL khởi tạo cơ sở dữ liệu
+COPY phonestore.sql /docker-entrypoint-initdb.d/
+
+# Expose port
+EXPOSE 3306
