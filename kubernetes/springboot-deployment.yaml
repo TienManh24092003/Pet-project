@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: springboot
-          image: tienmanh24/phonestore-app:latest
+          image: tienmanh24/phonestore:v1.0.1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
