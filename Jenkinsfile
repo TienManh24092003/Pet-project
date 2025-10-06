@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+
     environment {
         APP_NAME     = "phonestore"
         DOCKER_USER  = "tienmanh24"
