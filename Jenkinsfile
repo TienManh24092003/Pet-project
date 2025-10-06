@@ -5,7 +5,7 @@ pipeline {
         APP_NAME     = "phonestore"
         DOCKER_USER  = "tienmanh24"
         IMAGE_TAG    = "v${env.BUILD_NUMBER}"
-        INFRA_REPO   = "https://github.com/TienManh/Pet-project.git"
+        INFRA_REPO   = "https://github.com/TienManh24092003/Pet-project.git"
         INFRA_BRANCH = "develop"
     }
 
