@@ -31,8 +31,8 @@ pipeline {
                 )]) {
                     bat """
                       echo %DOCKER_TOKEN% | docker login -u %DOCKER_USER% --password-stdin
-                      docker build -t %DOCKER_USER%/%APP_NAME%:%IMAGE_TAG% .
-                      docker push %DOCKER_USER%/%APP_NAME%:%IMAGE_TAG%
+                      docker build -t docker.io/%DOCKER_USER%/%APP_NAME%:%IMAGE_TAG% .
+                      docker push docker.io/%DOCKER_USER%/%APP_NAME%:%IMAGE_TAG%
                     """
                 }
             }
