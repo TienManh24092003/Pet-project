@@ -54,7 +54,7 @@ public class ProductServiceImp implements ProductService {
             throw new MessageException("id must null");
         }
         if (tradeMark.isEmpty()) {
-            throw new MessageException("Không tìm thấy thương hiệu");
+            throw new MessageException("Không tìm thấy thương hiệu a");
         }
         if (tradeMark.isEmpty()) {
             throw new MessageException("Không tìm thấy danh mục");
