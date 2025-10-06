@@ -57,7 +57,7 @@ public class ProductServiceImp implements ProductService {
             throw new MessageException("Không tìm thấy thương hiệu a");
         }
         if (tradeMark.isEmpty()) {
-            throw new MessageException("Không tìm thấy danh mục");
+            throw new MessageException("Không tìm thấy danh mục b");
         }
         product.setCreatedDate(new Date(System.currentTimeMillis()));
         product.setCreatedTime(new Time(System.currentTimeMillis()));
