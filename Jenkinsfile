@@ -41,44 +41,31 @@ pipeline {
         stage('Update Infra Repo with New Tag') {
             steps {
                 dir('infra') {
-                    git branch: "${INFRA_BRANCH}", url: "${INFRA_REPO}", credentialsId: 'git-token'
+                    git branch: "${INFRA_BRANCH}",
+                        url: "${INFRA_REPO}",
+                        credentialsId: 'git-token'
 
                     bat """
                       powershell -Command "(Get-Content kubernetes/springboot-deployment.yaml) -replace 'image: ${DOCKER_USER}/${APP_NAME}:.*', 'image: ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}' | Set-Content kubernetes/springboot-deployment.yaml"
 
                       git config user.email "jenkins@ci.local"
                       git config user.name "Jenkins CI"
-                      git commit -am "Update ${APP_NAME} image to ${IMAGE_TAG}"
-                      git push origin ${INFRA_BRANCH}
+                      git add kubernetes/springboot-deployment.yaml
+                      git commit -m "Update ${APP_NAME} image to ${IMAGE_TAG}"
                     """
-                }stage('Update Infra Repo with New Tag') {
-                     steps {
-                         dir('infra') {
-                             git branch: "${INFRA_BRANCH}",
-                                 url: "${INFRA_REPO}",
-                                 credentialsId: 'git-token'
 
-                             bat """
-                               powershell -Command "(Get-Content kubernetes/springboot-deployment.yaml) -replace 'image: ${DOCKER_USER}/${APP_NAME}:.*', 'image: ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}' | Set-Content kubernetes/springboot-deployment.yaml"
-
-                               git config user.email "jenkins@ci.local"
-                               git config user.name "Jenkins CI"
-                               git add kubernetes/springboot-deployment.yaml
-                               git commit -m "Update ${APP_NAME} image to ${IMAGE_TAG}"
-                             """
-
-                             withCredentials([usernamePassword(
-                                 credentialsId: 'git-token',
-                                 usernameVariable: 'GIT_USER',
-                                 passwordVariable: 'GIT_TOKEN'
-                             )]) {
-                                 bat """
-                                   git push https://%GIT_USER%:%GIT_TOKEN%@github.com/TienManh24092003/Pet-project.git ${INFRA_BRANCH}
-                                 """
-                             }
-                         }
-                     }
-                 }
+                    withCredentials([usernamePassword(
+                        credentialsId: 'git-token',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_TOKEN'
+                    )]) {
+                        bat """
+                          git push https://%GIT_USER%:%GIT_TOKEN%@github.com/TienManh24092003/Pet-project.git ${INFRA_BRANCH}
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
