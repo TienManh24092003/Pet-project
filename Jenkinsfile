@@ -29,11 +29,11 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_TOKEN'
                 )]) {
-                    sh '''
-                      echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
-                      docker build -t $DOCKER_USER/$APP_NAME:$IMAGE_TAG .
-                      docker push $DOCKER_USER/$APP_NAME:$IMAGE_TAG
-                    '''
+                    bat """
+                      echo %DOCKER_TOKEN% | docker login -u %DOCKER_USER% --password-stdin
+                      docker build -t %DOCKER_USER%/%APP_NAME%:%IMAGE_TAG% .
+                      docker push %DOCKER_USER%/%APP_NAME%:%IMAGE_TAG%
+                    """
                 }
             }
         }
@@ -43,14 +43,14 @@ pipeline {
                 dir('infra') {
                     git branch: "${INFRA_BRANCH}", url: "${INFRA_REPO}", credentialsId: 'git-token'
 
-                    sh '''
-                      sed -i "s|image: ${DOCKER_USER}/${APP_NAME}:.*|image: ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}|" kubernetes/springboot-deployment.yaml
+                    bat """
+                      powershell -Command "(Get-Content kubernetes/springboot-deployment.yaml) -replace 'image: ${DOCKER_USER}/${APP_NAME}:.*', 'image: ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}' | Set-Content kubernetes/springboot-deployment.yaml"
 
                       git config user.email "jenkins@ci.local"
                       git config user.name "Jenkins CI"
                       git commit -am "Update ${APP_NAME} image to ${IMAGE_TAG}"
                       git push origin ${INFRA_BRANCH}
-                    '''
+                    """
                 }
             }
         }
