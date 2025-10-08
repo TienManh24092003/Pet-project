@@ -1,0 +1,57 @@
+stages:
+  - build
+  - docker
+  - deploy
+
+variables:
+  APP_NAME: "phonestore"
+  DOCKER_USER: "tienmanh24"
+  IMAGE_TAG: "v$CI_PIPELINE_IID"
+  INFRA_REPO: "https://github.com/TienManh24092003/Pet-project.git"
+  INFRA_BRANCH: "develop"
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+
+build_jar:
+  stage: build
+  tags:
+    - windows
+  script:
+    - echo "Checkout code is automatic in GitLab CI"
+    - mvnw.cmd clean package -DskipTests
+
+docker_build_push:
+  stage: docker
+  tags:
+    - windows
+  variables:
+    DOCKER_USER: $DOCKER_USER
+    IMAGE_TAG: $IMAGE_TAG
+  script:
+    - echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
+    - docker build -t docker.io/$DOCKER_USER/$APP_NAME:$IMAGE_TAG .
+    - docker push docker.io/$DOCKER_USER/$APP_NAME:$IMAGE_TAG
+  only:
+    - branches
+
+update_infra:
+  stage: deploy
+  tags:
+    - windows
+  script:
+    - git clone -b $INFRA_BRANCH $INFRA_REPO infra
+    - cd infra
+    - >
+      powershell -Command "(Get-Content kubernetes/springboot-deployment.yaml) `
+      -replace 'image: ${DOCKER_USER}/${APP_NAME}:.*', 'image: ${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}' `
+      | Set-Content kubernetes/springboot-deployment.yaml"
+    - git config user.email "gitlab-ci@ci.local"
+    - git config user.name "GitLab CI"
+    - git add kubernetes/springboot-deployment.yaml
+    - git commit -m "Update ${APP_NAME} image to ${IMAGE_TAG}" || echo "No changes to commit"
+    - git push https://$GIT_USER:$GIT_TOKEN@github.com/TienManh24092003/Pet-project.git $INFRA_BRANCH
+  only:
+    - branches
+
