@@ -1,5 +1,5 @@
 # Sử dụng image base cho Java
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 # Đặt thư mục làm việc
 WORKDIR /app

@@ -19,6 +19,7 @@ services:
 
   springboot:
     build: .
+    image: my-spring-app
     container_name: spring-app
     restart: always
     depends_on:
