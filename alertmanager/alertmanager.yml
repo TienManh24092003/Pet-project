@@ -1,0 +1,12 @@
+global:
+  resolve_timeout: 15s
+
+route:
+  group_by: ['alertname']
+  receiver: 'teams-webhook'
+
+receivers:
+  - name: 'teams-webhook'
+    webhook_configs:
+      - url: 'http://prom2teams:8089'
+        send_resolved: true

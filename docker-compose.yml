@@ -16,6 +16,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 240s
+    networks:
+      - monitoring
 
   springboot:
     build: .
@@ -31,6 +33,12 @@ services:
       DATABASE_URL: jdbc:mysql://mysql:3306/phonestore?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USER: root
       DB_PASSWORD: 123456
+    networks:
+      - monitoring
 
 volumes:
   mysql_data:
+
+networks:
+  monitoring:
+    external: true

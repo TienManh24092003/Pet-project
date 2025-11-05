@@ -1,0 +1,52 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - ./prometheus/data:/prometheus
+    depends_on:
+      - node-exporter
+      - alertmanager
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: always
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    networks:
+      - monitoring
+
+  prom2teams:
+    image: idealista/prom2teams:latest
+    container_name: prom2teams
+    restart: unless-stopped
+    environment:
+      PROM2TEAMS_CONNECTOR: "https://lgcns.webhook.office.com/webhookb2/13fd5177-0bc4-4580-be7e-2c627c2ebb4c@fab2d60f-e614-4f9d-b2ad-9fb1397f2efe/IncomingWebhook/47a9014516494c8dafa934ec5858a3f5/453f3338-1789-4b11-9977-7259968696a2/V2I-CNwatOXvSczESqxlD-Yq5KoQrTfzBh9jnDd2wIFos1"
+    ports:
+      - "8089:8089"
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    external: true
+
